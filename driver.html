@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Sign In | suremove</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .main-navigation { left: 0; }
+        .driver-auth { max-width: 520px; margin: 24px auto; }
+        .driver-auth-switch {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .driver-auth-switch button {
+            flex: 1;
+            min-height: 44px;
+            padding: 10px;
+            border: 1px solid rgba(255, 143, 193, 0.4);
+            background: rgba(26, 10, 19, 0.9);
+            color: #ffe4ef;
+        }
+        .driver-auth-switch button[aria-pressed="true"] {
+            background: linear-gradient(135deg, #ff2b91, #c9005d);
+            color: #ffffff;
+        }
+        .driver-auth input {
+            width: 100%;
+            min-height: 42px;
+            margin: 8px 0 16px;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+        }
+        .driver-auth label {
+            display: block;
+            color: #475569;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .email-verification-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .email-verification-actions button {
+            flex: 1;
+            min-width: 0;
+            min-height: 42px;
+            padding: 10px 12px;
+            background: linear-gradient(135deg, #ff2b91, #c9005d);
+        }
+        .email-verification-actions .verification-resend-button {
+            border: 1px solid rgba(255, 143, 193, 0.55);
+            background: rgba(26, 10, 19, 0.9);
+            color: #ffe4ef;
+            box-shadow: none;
+        }
+        .email-verification-actions .verification-resend-button:hover {
+            background: rgba(70, 20, 48, 0.95);
+        }
+        .email-verification-actions button:disabled {
+            cursor: wait;
+            opacity: 0.7;
+        }
+        .driver-message { min-height: 24px; margin-top: 12px; }
+        .driver-verification-note {
+            margin-top: 14px;
+            color: #e4c2d2;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .driver-verification-note code {
+            color: #ff8fc1;
+        }
+        @media (max-width: 480px) {
+            .driver-auth-switch {
+                flex-direction: column;
+            }
+        }
+        @media (max-width: 380px) {
+            .email-verification-actions { flex-direction: column; }
+        }
+    </style>
+</head>
+<body class="portal-layout">
+    <header class="main-navigation">
+        <a href="driver.html" class="brand-name">suremove | Driver</a>
+        <nav class="top-nav-links">
+            <a href="supplier.html" data-portal-switch>Supplier Sign In</a>
+        </nav>
+    </header>
+    <main class="main-content" style="margin-left:0;width:100%;max-width:1100px;margin-right:auto;">
+        <section class="content-card driver-auth">
+            <h1>Driver Portal</h1>
+            <p>Sign in to view assigned packages and share your live location.</p>
+            <div class="driver-auth-switch" role="group" aria-label="Driver account options">
+                <button type="button" id="show-driver-login" aria-pressed="true">
+                    I already have an account
+                </button>
+                <button type="button" id="show-driver-signup" aria-pressed="false">
+                    Create a driver account
+                </button>
+            </div>
+            <button type="button" id="driver-facebook-login" class="facebook-login-button">
+                <span class="facebook-mark" aria-hidden="true">f</span>
+                Continue with Facebook
+            </button>
+            <form id="driver-login-form">
+                <h2>Driver Sign In</h2>
+                <label for="driver-login-email">Email</label>
+                <input id="driver-login-email" type="email" autocomplete="username" required>
+                <label for="driver-login-password">Password</label>
+                <input id="driver-login-password" type="password" autocomplete="current-password" required>
+                <button type="submit" id="driver-login-button">Sign In</button>
+            </form>
+            <form id="driver-signup-form" hidden>
+                <h2>Create Driver Account</h2>
+                <label for="driver-signup-email">Email</label>
+                <input id="driver-signup-email" type="email" autocomplete="email" required>
+                <label for="driver-signup-password">Password (at least 6 characters)</label>
+                <input id="driver-signup-password" type="password" minlength="6" autocomplete="new-password" required>
+                <button type="submit" id="driver-signup-button">Create Driver Account</button>
+            </form>
+            <form id="driver-verification-form" hidden>
+                <h2>Verify Email</h2>
+                <p id="driver-verification-help">
+                    Enter the six-digit code sent to
+                    <strong id="driver-verification-email"></strong>.
+                    Check your spam folder if it is not in your inbox.
+                </p>
+                <label for="driver-verification-code">6-digit verification code</label>
+                <input id="driver-verification-code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required>
+                <div class="email-verification-actions">
+                    <button type="submit" id="driver-verify-button">Verify Email</button>
+                    <button type="button" id="driver-resend-code-button" class="verification-resend-button">Resend Code</button>
+                </div>
+                <button type="button" id="driver-edit-email-button">Use a different email</button>
+                <p class="driver-verification-note">
+                    Still no email? The Supabase Confirm signup template must include
+                    <code>{{ .Token }}</code>. Supabase's default mailer only sends to
+                    project team addresses; other recipients need custom SMTP.
+                </p>
+            </form>
+            <p id="driver-auth-message" class="driver-message" role="status" aria-live="polite"></p>
+            <p><a href="login.html">Administrator sign in</a> · <a href="supplier.html">Supplier Portal</a></p>
+        </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="portal-switch.js"></script>
+    <script src="signup-verification.js"></script>
+    <script src="driver.js"></script>
+</body>
+</html>

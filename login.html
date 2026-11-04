@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | suremove</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+    <nav class="utility-bar" aria-label="Quick links">
+        <div class="utility-bar-links">
+            <div class="utility-item">
+                <a href="shipment-tracking.html">Track &amp; Trace</a>
+                <p class="utility-info">Look up a package and check its latest delivery status.</p>
+            </div>
+            <div class="utility-item">
+                <a href="ai-assistant.html">Help Center</a>
+                <p class="utility-info">Get help finding the right SureMove page or feature.</p>
+            </div>
+            <div class="utility-item">
+                <a href="about.html">About SureMove</a>
+                <p class="utility-info">Learn about SureMove and the tools available in the portal.</p>
+            </div>
+        </div>
+    </nav>
+
+    <header class="site-header">
+        <a class="site-brand" href="login.html" aria-label="suremove home">
+            <img class="brand-logo" src="images/suremove-logo.png" alt="SureMove logistics">
+        </a>
+
+        <nav class="site-navigation" aria-label="Main navigation">
+            <a href="shipment-tracking.html">Tracking</a>
+        </nav>
+
+        <div class="header-actions">
+            <button type="button" class="register-link" id="open-register">Create Account</button>
+            <button type="button" class="header-login" id="open-login">Login</button>
+        </div>
+    </header>
+
+    <main class="login-container">
+
+        <section class="welcome-section portal-hero">
+            <p class="eyebrow">CONNECTED LOGISTICS. CONFIDENT DELIVERY.</p>
+
+            <h1>
+                Move your<br>
+                business forward
+            </h1>
+
+            <p class="welcome-text">
+                Coordinate shipments, fleet operations, warehouse activity,
+                and supplier orders in one connected logistics platform.
+            </p>
+
+            <form id="portal-search-form" class="portal-search">
+                <label class="visually-hidden" for="portal-search-input">Search SureMove portals</label>
+                <input
+                    id="portal-search-input"
+                    type="search"
+                    list="portal-search-options"
+                    placeholder="Search tracking, fleet, warehouse..."
+                    autocomplete="off"
+                    required
+                >
+                <datalist id="portal-search-options">
+                    <option value="Package tracking"></option>
+                    <option value="Fleet tracking"></option>
+                    <option value="Warehouse"></option>
+                    <option value="Inventory stocks"></option>
+                    <option value="Supplier portal"></option>
+                    <option value="Driver portal"></option>
+                    <option value="Administrator dashboard"></option>
+                </datalist>
+                <button type="submit" class="register-link">Explore portal</button>
+            </form>
+            <p id="portal-search-message" class="portal-search-message" role="status" aria-live="polite"></p>
+
+            <div class="portal-highlights" aria-label="SureMove portal features">
+                <span>Shipment tracking</span>
+                <span>Fleet visibility</span>
+                <span>Supplier coordination</span>
+            </div>
+        </section>
+
+    </main>
+
+    <div class="auth-modal" id="login-modal" hidden>
+        <section class="login-card" role="dialog" aria-modal="true" aria-labelledby="sign-in-title">
+            <button type="button" class="modal-close" id="close-login" aria-label="Close sign-in">&times;</button>
+            <div class="login-heading" id="sign-in">
+                <div class="login-icon" aria-hidden="true">↗</div>
+                <h2 id="sign-in-title">Sign In</h2>
+                <p>Enter your account details to continue.</p>
+            </div>
+
+            <button type="button" id="facebook-login-button" class="login-button facebook-login-button">
+                <span class="facebook-mark" aria-hidden="true">f</span>
+                Continue with Facebook
+            </button>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Email</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="email"
+                        placeholder="Enter your email"
+                        inputmode="email"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+
+                <div class="form-options">
+                    <label class="remember">
+                        <input type="checkbox" id="remember">
+                        Remember me
+                    </label>
+                </div>
+
+                <button type="submit" class="login-button">
+                    Log In
+                </button>
+
+                <p id="login-message" class="login-message"></p>
+                <button
+                    type="button"
+                    id="resend-confirmation-button"
+                    class="login-button"
+                    hidden
+                >
+                    Resend verification code
+                </button>
+                <div id="login-verification" hidden>
+                    <div class="form-group">
+                        <label for="login-verification-code">Email verification code</label>
+                        <input
+                            type="text"
+                            id="login-verification-code"
+                            inputmode="numeric"
+                            autocomplete="one-time-code"
+                            pattern="[0-9]{6}"
+                            maxlength="6"
+                            placeholder="Enter the 6-digit code"
+                        >
+                    </div>
+                    <div class="email-verification-actions">
+                        <button type="button" id="verify-email-button" class="login-button">
+                            Verify Email
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <p class="account-switch">
+                Sign in with your account. We’ll open your portal automatically.
+            </p>
+            <div class="login-footer">
+                <p>Authorized users only · © 2026 suremove</p>
+            </div>
+
+        </section>
+    </div>
+
+    <div class="auth-modal" id="register-modal" hidden>
+        <section class="login-card register-card" role="dialog" aria-modal="true" aria-labelledby="register-title">
+            <button type="button" class="modal-close" id="close-register" aria-label="Close registration">&times;</button>
+            <div class="login-heading">
+                <div class="login-icon" aria-hidden="true">+</div>
+                <h2 id="register-title">Create Account</h2>
+                <p>Choose the type of account you need.</p>
+            </div>
+
+            <form id="register-form">
+                <fieldset class="account-role-choice">
+                    <legend>Account type</legend>
+                    <label>
+                        <input type="radio" name="account-role" value="supplier" checked>
+                        <span>Supplier</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="account-role" value="driver">
+                        <span>Driver</span>
+                    </label>
+                </fieldset>
+                <div class="form-group">
+                    <label for="new-username">Username</label>
+                    <input type="text" id="new-username" name="username" placeholder="Create a username" minlength="3" autocomplete="username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="new-email">Email</label>
+                    <input type="email" id="new-email" name="email" placeholder="Enter your email" autocomplete="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="new-password">Password</label>
+                    <input type="password" id="new-password" name="password" placeholder="Create a password" minlength="6" autocomplete="new-password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password" name="confirm-password" placeholder="Enter your password again" minlength="6" autocomplete="new-password" required>
+                </div>
+
+                <button type="submit" class="login-button">Create Account</button>
+            </form>
+
+            <form id="register-verification-form" hidden>
+                <div class="form-group">
+                    <label for="register-code">Email verification code</label>
+                    <input type="text" id="register-code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="Enter the 6-digit code" required>
+                </div>
+                <div class="email-verification-actions">
+                    <button type="submit" class="login-button">Verify Email</button>
+                    <button type="button" id="register-resend-code" class="login-button verification-resend-button">Resend Code</button>
+                </div>
+            </form>
+            <p id="register-message" class="login-message" role="status" aria-live="polite"></p>
+
+            <p class="account-switch">
+                Already have an account?
+                <button type="button" class="text-action" id="switch-to-login">Sign In</button>
+            </p>
+        </section>
+    </div>
+
+    <footer>
+        suremove | Logistics & Supply Chain System
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="signup-verification.js"></script>
+    <script src="portal-switch.js"></script>
+    <script src="register.js"></script>
+    <script src="login.js"></script>
+
+</body>
+</html>

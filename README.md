@@ -1,1 +1,43 @@
-# suremove
+# PROJECT-NI-NOAH
+
+## Run locally
+
+1. Run [supabase-inventory.sql](./supabase-inventory.sql) in the Supabase SQL Editor. It sets up the products, vehicle locations, and shipments tables used by Inventory Stocks, Fleet Tracking, and package tracking.
+2. On Windows PowerShell, start the static app with `npm.cmd start`.
+3. Open [http://localhost:3000/login.html](http://localhost:3000/login.html).
+
+Keep the terminal running while using the app locally. The app uses Supabase for authentication and inventory data; the Express/MySQL API is not required for the browser app. You can also use VS Code Live Server, as the browser app connects directly to Supabase.
+
+## Accounts
+
+Sign-up and sign-in use Supabase Auth. The browser client settings are in `supabase.js`. In the Supabase dashboard, enable email/password authentication and email confirmations. To deliver a six-digit verification code for new accounts, update **Authentication → Email Templates → Confirm signup** so the message contains `{{ .Token }}` (for example, “Your suremove verification code is {{ .Token }}”) instead of only a confirmation link. Existing users continue to sign in with email and password; the email code is required only when creating a new account. After sign-in, SureMove reads the account role and automatically opens the matching admin, driver, or supplier portal.
+
+Facebook sign-in is available from the main, Driver, and Supplier sign-in screens. The account settings page at `account-phone.html` also supports linking Facebook to an existing account; after Facebook confirms the link, the user returns to the portal for their account role. Enable manual identity linking in Supabase's authentication configuration. To enable Facebook OAuth, create a Facebook app with the Facebook Login product, add its App ID and App Secret under **Supabase → Authentication → Providers → Facebook**, and configure the Facebook Valid OAuth Redirect URI as `https://pyxbhfnmzogsmsykoekd.supabase.co/auth/v1/callback`. Allow the standard `email` permission in Meta's Facebook Login settings, and use a Facebook account that has an email address; Facebook does not always return an email for accounts without one. In Supabase **Authentication → URL Configuration**, allow the deployed `https://YOUR-SITE.netlify.app/**` redirect URL and `http://localhost:3000/**` while developing. The account must have an application role to enter a portal; new OAuth users are assigned the database's default supplier role. Never put the Facebook App Secret in frontend code.
+
+If a new driver does not receive a code, check the exact address shown on the verification step and its spam folder, then use **Resend Code**. Supabase's default mailer is for testing: it only sends to addresses on the Supabase organization's team and has a very low sending limit. To email drivers who are not project team members, configure a custom SMTP provider under **Project Settings → Authentication → SMTP Settings** (the exact menu label may vary) and verify the sender/domain with that provider. Add `http://localhost:3000/**` and `http://localhost:5502/**` to **Authentication → URL Configuration → Redirect URLs** when developing locally.
+
+SureMove account access uses email and password, with optional Facebook sign-in. Phone-number and SMS authentication have been removed; users do not need a phone number to register or sign in.
+
+Run the complete [supabase-inventory.sql](./supabase-inventory.sql) in the Supabase SQL Editor. It creates and updates the tables, assigns roles to existing accounts, and installs automatic role assignment: users choosing Supplier at [register.html](./register.html) or the main signup form get `supplier`; choosing Driver or signing up through [driver.html](./driver.html) gets `driver`. Registration never grants `admin`; grant that role only to trusted accounts separately in Supabase. Existing admin roles are preserved by the migration. This replaces the earlier customer portal role setup.
+
+Suppliers sign in or register at [supplier.html](./supplier.html), then land on their separate [supplier-dashboard.html](./supplier-dashboard.html) to register incoming packages, track assigned vehicles and delivery ETAs, and submit product requests for admin approval. Admins assign vehicles and suppliers to packages in Package Tracking and review product requests on Supplier Orders. Drivers sign in or register at [driver.html](./driver.html), then land on their separate [driver-dashboard.html](./driver-dashboard.html); the administrator assigns their account to a vehicle, after which drivers can view assigned packages, share GPS, and update package status.
+
+## Deploy publicly with Netlify
+
+1. Run [supabase-inventory.sql](./supabase-inventory.sql) in the Supabase SQL Editor. This creates the products, vehicle locations, and shipments tables, role-based row policies, and a stock adjustment function.
+2. Push the project to a GitHub repository. Keep `.env` out of GitHub; it contains local settings and is not needed by the static Netlify site.
+3. In Netlify, choose **Add new site → Import an existing project**, connect GitHub, and select this repository. Netlify uses [netlify.toml](./netlify.toml) to run `npm run build` and publish the generated `dist` directory. The build copies only static HTML, CSS, browser JavaScript, and image assets; it excludes `.env` and the Express server.
+4. Deploy and copy the Netlify URL. In Supabase **Authentication → URL Configuration**, set the Site URL to that URL and add `https://YOUR-SITE.netlify.app/**` to the Redirect URLs.
+5. Grant the `admin` role separately in Supabase to a trusted account. Suppliers register at `register.html`; drivers register through the Driver Portal.
+
+Supabase row-level security enforces the portal boundaries in the database: administrators manage inventory, fleet, shipments, and supplier requests; drivers can read only vehicles assigned to their driver account and packages on those vehicles, and can update delivery status and ETA; suppliers can register packages, read only their own shipments and product requests, and submit requests for administrator review. Driver and supplier dashboard pages also verify the signed-in role before loading account data. Existing products in local MySQL are not copied automatically; export and import them into Supabase if you need to keep them.
+
+## Vehicle cargo and live location
+
+Create packages in Package Tracking and enter the quantity and destination address. The database automatically assigns the nearest available truck that has an assigned driver and GPS coordinates; unassigned packages are retried when a driver shares a location, a truck becomes available, or a package changes. You can still choose a truck manually. On the driver's phone, open [driver.html](./driver.html), sign in, and open the driver dashboard. Tap **Share Live GPS** and allow location access. Driver GPS, delivery status, vehicle assignments, and ETA updates appear on the administrator's Fleet Tracking and Package Tracking pages through Supabase Realtime, with a 30-second refresh fallback. The driver dashboard and supplier portal also refresh assignments and shipment status through Realtime, with a 30-second fallback. Keep the driver dashboard open during delivery. Location sharing is not background tracking; it requires the dashboard to remain open, an internet connection, and browser location permission.
+
+The driver dashboard shows the assigned truck plate, driver name, status, scheduled delivery, destination, and ETA. Drivers can submit delivery proof photos when marking a package delivered, report delays or vehicle problems to the administrator, and calculate an optimized stop order and road route using OSRM. The administrator Fleet map and supplier map also show road-route lines from each truck's latest shared GPS location through its active assigned delivery stops; the lines refresh with live shipment/vehicle updates. The route starts at the truck rather than a warehouse because warehouse records do not currently provide geocoded origins. Route suggestions are road-routing estimates, not AI or live-traffic predictions. Run the full Supabase SQL setup to create the protected proof storage bucket, reports table, and schedule/proof fields.
+
+## Package tracking
+
+Open **View Shipments** on the dashboard to create packages with a tracking number, destination address, quantity, and delivery status. Assign a vehicle to a package; multiple packages can be assigned to one vehicle. Destination lookup uses OpenStreetMap Nominatim and route estimates use the public OSRM routing service. These services receive the package destination and driver GPS coordinates; estimates are approximate and require internet access.
